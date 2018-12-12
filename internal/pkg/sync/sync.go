@@ -27,14 +27,16 @@ type Relay interface {
 }
 
 //
-type sync struct {
-	relay Relay
+type Sync struct {
+	relay    Relay
+	shutdown chan bool
+	ticks    chan bool
 }
 
 //
-func New(conf *syncConfig) (*sync, error) {
+func New(conf *syncConfig) (*Sync, error) {
 
-	sync := &sync{}
+	sync := &Sync{}
 
 	var out io.Writer = sync
 	if log.ToTerminal {
@@ -61,16 +63,38 @@ func New(conf *syncConfig) (*sync, error) {
 	}
 
 	sync.relay = relay
+	sync.shutdown = make(chan bool)
+	sync.ticks = make(chan bool, 1)
+
 	return sync, nil
 }
 
 //
-func (s *sync) Dispose() {
+func (s *Sync) Shutdown() {
+	s.shutdown <- true
+	s.WaitForTick()
+}
+
+//
+func (s *Sync) tick() {
+	select {
+	case s.ticks <- true:
+	default:
+	}
+}
+
+//
+func (s *Sync) WaitForTick() {
+	<-s.ticks
+}
+
+//
+func (s *Sync) Dispose() {
 	s.relay.Dispose()
 }
 
 //
-func (s *sync) SyncFromConfig(conf *syncConfig) error {
+func (s *Sync) SyncFromConfig(conf *syncConfig) error {
 
 	if err := s.relay.Prepare(); err != nil {
 		return err
@@ -102,11 +126,16 @@ func (s *sync) SyncFromConfig(conf *syncConfig) error {
 		log.Info("waiting for next sync task...")
 		log.Println()
 		select {
-		case t := <-c:
+		case t := <-c: // actual task
 			s.syncTask(t)
-		case sig := <-sigs:
+			s.tick() // send a tick
+		case sig := <-sigs: // interrupt signal
 			log.Info("\nreceived '%v' signal, stopping ...\n", sig)
 			ticking = false
+		case <-s.shutdown: // shutdown flagged
+			log.Info("\nshutdown flagged, stopping ...\n")
+			ticking = false
+			s.tick() // send a final tick to release shutdown client
 		}
 	}
 
@@ -126,7 +155,7 @@ func (s *sync) SyncFromConfig(conf *syncConfig) error {
 }
 
 //
-func (s *sync) syncTask(t *task) {
+func (s *Sync) syncTask(t *task) {
 
 	if t.tooSoon() {
 		log.Info("task '%s' fired too soon, skipping", t.Name)
@@ -154,7 +183,7 @@ func (s *sync) syncTask(t *task) {
 }
 
 //
-func (s *sync) Write(p []byte) (n int, err error) {
+func (s *Sync) Write(p []byte) (n int, err error) {
 	fmt.Print(string(p))
 	return len(p), nil
 }

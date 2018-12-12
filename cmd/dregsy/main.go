@@ -17,6 +17,11 @@ import (
 
 var DregsyVersion string
 
+var syncInstance *sync.Sync
+var dregsyExitCode int
+
+var inTestRound bool
+
 //
 func version() {
 	log.Info("\ndregsy %s\n", DregsyVersion)
@@ -25,13 +30,15 @@ func version() {
 //
 func main() {
 
+	dregsyExitCode = 0
+
 	configFile := flag.String("config", "", "path to config file")
 	flag.Parse()
 
 	if len(*configFile) == 0 {
 		version()
-		fmt.Println("synopsis: dregsy -config={config file}\n")
-		os.Exit(1)
+		fmt.Println("synopsis: dregsy -config={config file}")
+		exit(1)
 	}
 
 	version()
@@ -39,11 +46,11 @@ func main() {
 	conf, err := sync.LoadConfig(*configFile)
 	failOnError(err)
 
-	sync, err := sync.New(conf)
+	syncInstance, err = sync.New(conf)
 	failOnError(err)
 
-	err = sync.SyncFromConfig(conf)
-	sync.Dispose()
+	err = syncInstance.SyncFromConfig(conf)
+	syncInstance.Dispose()
 	failOnError(err)
 }
 
@@ -51,6 +58,14 @@ func main() {
 func failOnError(err error) {
 	if err != nil {
 		log.Error(err)
-		os.Exit(1)
+		exit(1)
+	}
+}
+
+//
+func exit(code int) {
+	dregsyExitCode = code
+	if !inTestRound {
+		os.Exit(code)
 	}
 }

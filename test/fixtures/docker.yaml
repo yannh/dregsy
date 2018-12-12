@@ -1,0 +1,16 @@
+relay: docker
+
+tasks:
+  - name: test
+    interval: 60
+    verbose: true
+    source:
+      registry: registry.hub.docker.com
+      auth: eyJ1c2VybmFtZSI6ICJhbm9ueW1vdXMiLCAicGFzc3dvcmQiOiAiYW5vbnltb3VzIn0K
+    target:
+      registry: localhost:5000
+      auth: eyJ1c2VybmFtZSI6ICJhbm9ueW1vdXMiLCAicGFzc3dvcmQiOiAiYW5vbnltb3VzIn0K
+    mappings:
+      - from: library/busybox
+        to: e2e-a/library/busybox
+        tags: ['1.29.2', '1.29.3', '1.29-musl']
