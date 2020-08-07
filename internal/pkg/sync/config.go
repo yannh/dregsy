@@ -8,6 +8,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 	"time"
 
@@ -344,10 +345,26 @@ func (l *location) refreshAuth() error {
  *
  */
 type mapping struct {
-	From string   `yaml:"from"`
-	To   string   `yaml:"to"`
-	Tags []string `yaml:"tags"`
+	From        string   `yaml:"from"`
+	To          string   `yaml:"to"`
+	Tags        []string `yaml:"tags"`
 	ExcludeTags []string `yaml:"excludeTags"`
+}
+
+func isValidTag(tag string) error {
+	validTag, err := regexp.Compile(`^(<|<=|>|>=)*[0-9A-Za-z_.\-*]+$`)
+	if err != nil {
+		return err
+	}
+	if !validTag.Match([]byte(tag)) {
+		return errors.New(fmt.Sprintf("tag %s contains unexpected characters", tag))
+	}
+
+	if tags.GetComparisonOperator(tag) != "" && strings.Contains(tag, "*") {
+		return errors.New(fmt.Sprintf("can not have wildcard in tag %s since it uses a comparison operator", tag))
+	}
+
+	return nil
 }
 
 //
@@ -365,8 +382,8 @@ func (m *mapping) validate() error {
 	}
 
 	for _, tag := range m.Tags {
-		if tags.GetComparisonOperator(tag) != "" && strings.Contains(tag, "*") {
-			return errors.New(fmt.Sprint("can not have wildcard in tag %s since it uses a comparison operator", tag))
+		if isValidTag(tag) != nil {
+			return errors.New(fmt.Sprintf("tag %s not valid", tag))
 		}
 	}
 

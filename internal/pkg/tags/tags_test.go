@@ -107,6 +107,14 @@ func TestMatch(t *testing.T) {
 			false,
 			nil,
 		},
+		{
+			"special regexp characters",
+			"v111",
+			[]string{"v1.1"},
+			[]string{},
+			false,
+			nil,
+		},
 	}
 
 	for _, testCase := range testCases {

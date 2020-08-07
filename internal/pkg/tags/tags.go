@@ -24,7 +24,8 @@ func GetComparisonOperator(tag string) string {
 }
 
 func patternToRegexp(pattern string) (*regexp.Regexp, error) {
-	return regexp.Compile(strings.ReplaceAll(pattern, "*", "[0-9a-zA-Z-_]*"))
+	pattern = regexp.QuoteMeta(pattern)
+	return regexp.Compile(strings.ReplaceAll(pattern, "\\*", "[0-9a-zA-Z-_]*"))
 }
 
 func matchPattern(tag, pattern string) (bool, error) {
