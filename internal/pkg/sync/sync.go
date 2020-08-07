@@ -12,9 +12,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/xelalexv/dregsy/internal/pkg/log"
-	"github.com/xelalexv/dregsy/internal/pkg/relays/docker"
-	"github.com/xelalexv/dregsy/internal/pkg/relays/skopeo"
+	"github.com/yannh/dregsy/internal/pkg/log"
+	"github.com/yannh/dregsy/internal/pkg/relays/docker"
+	"github.com/yannh/dregsy/internal/pkg/relays/skopeo"
 )
 
 //

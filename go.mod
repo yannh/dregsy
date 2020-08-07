@@ -1,4 +1,4 @@
-module github.com/xelalexv/dregsy
+module github.com/yannh/dregsy
 
 go 1.14
 
@@ -8,7 +8,7 @@ require (
 	github.com/aws/aws-sdk-go v1.31.4
 	github.com/containerd/containerd v1.3.7 // indirect
 	github.com/docker/distribution v2.7.1+incompatible
-	github.com/docker/docker v17.12.0-ce-rc1.0.20200531234253-77e06fda0c94+incompatible
+	github.com/moby/moby v17.12.0-ce-rc1.0.20200531234253-77e06fda0c94+incompatible
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/gogo/protobuf v1.3.1 // indirect

@@ -19,9 +19,9 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ecr"
 
-	"github.com/xelalexv/dregsy/internal/pkg/log"
-	"github.com/xelalexv/dregsy/internal/pkg/relays/docker"
-	"github.com/xelalexv/dregsy/internal/pkg/relays/skopeo"
+	"github.com/yannh/dregsy/internal/pkg/log"
+	"github.com/yannh/dregsy/internal/pkg/relays/docker"
+	"github.com/yannh/dregsy/internal/pkg/relays/skopeo"
 )
 
 //

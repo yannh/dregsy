@@ -11,7 +11,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/xelalexv/dregsy/internal/pkg/log"
+	"github.com/yannh/dregsy/internal/pkg/log"
 )
 
 const defaultSkopeoBinary = "skopeo"

@@ -11,8 +11,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/xelalexv/dregsy/internal/pkg/log"
-	"github.com/xelalexv/dregsy/internal/pkg/sync"
+	"github.com/yannh/dregsy/internal/pkg/log"
+	"github.com/yannh/dregsy/internal/pkg/sync"
 )
 
 var DregsyVersion string
