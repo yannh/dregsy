@@ -73,7 +73,7 @@ help:
 
 
 .PHONY: release
-release: clean dregsy image
+release: clean test dregsy image
 #	clean, do an isolated build, and create container image
 #
 
@@ -103,7 +103,7 @@ dregsy:
 image:
 #	build the ${ITL}dregsy${NRM} container image; assumes binary was built
 #
-	docker build -t xelalex/$(REPO) -f Dockerfile \
+	docker build -t yannh/$(REPO) -f Dockerfile \
 		--build-arg binaries=$(BINARIES) .
 
 

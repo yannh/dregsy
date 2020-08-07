@@ -162,20 +162,20 @@ If there are any periodic sync tasks defined (see *Configuration* above), *dregs
 If you run *dregsy* natively on your system, with relay type `docker`, the *Docker* daemon of your system will be used as the relay for all sync tasks, so all synced images will wind up in the *Docker* storage of that daemon.
 
 ### Running Inside a *Docker* Container
-You can use the [*dregsy* image on Dockerhub](https://hub.docker.com/r/xelalex/dregsy/) for running *dregsy* containerized.
+You can use the [*dregsy* image on Dockerhub](https://hub.docker.com/r/yannhamon/dregsy/) for running *dregsy* containerized.
 
 #### With `skopeo` relay
 The image includes the `skopeo` binary, so all that's needed is:
 
 ```bash
-docker run --rm -v {path to config file}:/config.yaml xelalex/dregsy
+docker run --rm -v {path to config file}:/config.yaml yannhamon/dregsy
 ```
 
 #### With `docker` relay
 This will still use the local *Docker* daemon as the relay:
 
 ```bash
-docker run --privileged --rm -v {path to config file}:/config.yaml -v /var/run/docker.sock:/var/run/docker.sock xelalex/dregsy
+docker run --privileged --rm -v {path to config file}:/config.yaml -v /var/run/docker.sock:/var/run/docker.sock yannhamon/dregsy
 ```
 
 ### Running On *Kubernetes*
@@ -227,7 +227,7 @@ spec:
     spec:
       containers:
       - name: dregsy
-        image: xelalex/dregsy
+        image: yannhamon/dregsy
         command: ['dregsy', '-config=/config/config.yaml']
         resources:
           requests:
