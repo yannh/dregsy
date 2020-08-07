@@ -32,7 +32,6 @@ type sync struct {
 
 //
 func New(conf *syncConfig) (*sync, error) {
-
 	sync := &sync{}
 
 	var out io.Writer = sync
