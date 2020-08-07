@@ -34,7 +34,6 @@ const minimumAuthRefreshInterval = time.Hour
  *
  */
 type syncConfig struct {
-	Relay      string              `yaml:"relay"`
 	Skopeo     *skopeo.RelayConfig `yaml:"skopeo"`
 	APIVersion string              `yaml:"api-version"` // DEPRECATED
 	Tasks      []*task             `yaml:"tasks"`
@@ -42,7 +41,6 @@ type syncConfig struct {
 
 //
 func (c *syncConfig) validate() error {
-	c.Relay = skopeo.RelayID
 	for _, t := range c.Tasks {
 		if err := t.validate(); err != nil {
 			return err

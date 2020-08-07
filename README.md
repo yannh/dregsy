@@ -4,16 +4,13 @@
 
 
 ## Synopsis
-*dregsy* lets you sync *Docker* images between registries, public or private. Several sync tasks can be defined, as one-off or periodic tasks (see *Configuration* section). An image is synced by using a *sync relay*. Currently, this can be either [*Skopeo*](https://github.com/containers/skopeo) or a local *Docker* daemon. When using the latter, the image is first pulled from the source, then tagged for the destination, and finally pushed there. *Skopeo* in contrast, can directly transfer an image from source to destination, which makes it the preferred choice.
+*dregsy* lets you sync *Docker* images between registries, public or private. Several sync tasks can be defined, as one-off or periodic tasks (see *Configuration* section). Images are synced using [*Skopeo*](https://github.com/containers/skopeo).
 
 
 ## Configuration
 Sync tasks are defined in a YAML config file:
 
 ```yaml
-# relay type, either 'skopeo' or 'docker'
-relay: skopeo
-
 # relay config sections
 skopeo:
   # path to the skopeo binary; defaults to 'skopeo', in which case it needs to
@@ -22,12 +19,6 @@ skopeo:
   # directory under which to look for client certs & keys, as well as CA certs
   # (see note below)
   certs-dir: /etc/skopeo/certs.d
-
-docker:
-  # Docker host to use as the relay
-  dockerhost: unix:///var/run/docker.sock
-  # Docker API version to use, defaults to 1.24
-  api-version: 1.24
 
 # list of sync tasks
 tasks:
@@ -86,27 +77,12 @@ Tags support simple logic:
  * Wildcards '\*' are allowed - for example 'v0.1.\*', or 'v1.\*.\*'
  * Comparison operators are supported - '>=v0.2', '>1', '<1.2', '<=1'. In this case the tag can not contain wildcards.
 
-### Caveats
-
-When syncing via a *Docker* relay, do not use the same *Docker* daemon for building local images (even better: don't use it for anything else but syncing). There is a risk that the reference to a locally built image clashes with the shorthand notation for a reference to an image on `docker.io`. E.g. if you built a local image `busybox`, then this would be indistinguishable from the shorthand `busybox` pointing to `docker.io/library/busybox`. One way to avoid this is to use `registry.hub.docker.com` instead of `docker.io` in references, which would never get shortened. If you're not syncing from/to `docker.io`, then all of this is not a concern.
 
 ### Repository Validation & Client Authentication with TLS
 
 When connecting to source and target repository servers, TLS validation is performed to verify the identity of a server. If you're using self-signed certificates for a repo server, or a server's certificate cannot be validated with the CA bundle available on your system, you need to provide the required CA certs. (The *dregsy* *Docker* image includes the CA bundle from the official `golang` image). Also, if a repo server requires client authentication, i.e. mutual TLS, you need to provide an appropriate client key & cert pair.
 
-How you do that for *Docker* is [described here](https://docs.docker.com/engine/security/certificates/). The short version: create a folder under `/etc/docker/certs.d` with the same name as the repo server's host name, e.g. `source-registry.acme.com`, and place any required CA certs there as `*.crt` (mind the extension). Client key & cert pairs go there as well, as `*.key` and `*.cert`.
-
-Example:
-
-```
-/etc/docker/certs.d/
-    └── source-registry.acme.com
-       ├── client.cert
-       ├── client.key
-       └── ca.crt
-```
-
-When using the `skopeo` relay, this is essentially the same, except that you specify the root folder with the `skopeo` setting `certs-dir` (defaults to `/etc/skopeo/certs.d`). However, it's important to note the following differences:
+For this, specify the root folder with the `skopeo` setting `certs-dir` (defaults to `/etc/skopeo/certs.d`). However, it's important to note the following differences:
 
 - When a repo server uses a non-standard port, the port number is included in image references when pulling and pushing. For TLS validation, `docker` will accordingly expect a `{registry host name}:{port}` folder. For `skopeo`, this is not the case, i.e. the port number is dropped from the folder name. This was a conscious decision to avoid pain when running *dregsy* in *Kubernetes* and mounting certs & keys from secrets: [mount paths must not contain `:`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.13/#volumemount-v1-core).
 
