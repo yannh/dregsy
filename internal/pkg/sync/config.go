@@ -33,67 +33,14 @@ const minimumAuthRefreshInterval = time.Hour
  */
 type syncConfig struct {
 	Relay      string              `yaml:"relay"`
-	Docker     *docker.RelayConfig `yaml:"docker"`
 	Skopeo     *skopeo.RelayConfig `yaml:"skopeo"`
-	DockerHost string              `yaml:"dockerhost"`  // DEPRECATED
 	APIVersion string              `yaml:"api-version"` // DEPRECATED
 	Tasks      []*task             `yaml:"tasks"`
 }
 
 //
 func (c *syncConfig) validate() error {
-
-	if c.Relay == "" {
-		c.Relay = docker.RelayID
-	}
-
-	switch c.Relay {
-
-	case docker.RelayID:
-		if c.Docker == nil {
-			if c.DockerHost == "" && c.APIVersion == "" {
-				log.Warning(
-					"not specifying the 'docker' config item is deprecated")
-			}
-			templ := "the top-level '%s' setting is deprecated, " +
-				"use 'docker' config item instead"
-			if c.DockerHost != "" {
-				log.Warning(fmt.Sprintf(templ, "dockerhost"))
-			}
-			if c.APIVersion != "" {
-				log.Warning(fmt.Sprintf(templ, "api-version"))
-			}
-			c.Docker = &docker.RelayConfig{
-				DockerHost: c.DockerHost,
-				APIVersion: c.APIVersion,
-			}
-
-		} else {
-			templ := "discarding deprecated top-level '%s' setting and " +
-				"using 'docker' config item instead"
-			if c.DockerHost != "" {
-				log.Warning(fmt.Sprintf(templ, "dockerhost"))
-				c.DockerHost = ""
-			}
-			if c.APIVersion != "" {
-				log.Warning(fmt.Sprintf(templ, "api-version"))
-				c.APIVersion = ""
-			}
-		}
-
-	case skopeo.RelayID:
-		if c.DockerHost != "" {
-			return fmt.Errorf(
-				"setting 'dockerhost' implies '%s' relay, but relay is set to '%s'",
-				docker.RelayID, c.Relay)
-		}
-
-	default:
-		return fmt.Errorf(
-			"invalid relay type: '%s', must be either '%s' or '%s'",
-			c.Relay, docker.RelayID, skopeo.RelayID)
-	}
-
+	c.Relay = skopeo.RelayID
 	for _, t := range c.Tasks {
 		if err := t.validate(); err != nil {
 			return err
