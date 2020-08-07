@@ -82,7 +82,6 @@ test:
 #	run test within a container image
 #
 	docker run --rm --user $(shell id -u):$(shell id -g) \
-        $(CACHE_VOLS) \
 		-v $(shell pwd):/go/src/$(REPO) -w /go/src/$(REPO) \
 		$(GO_IMAGE) go test -v ./...
 
