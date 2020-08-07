@@ -30,7 +30,7 @@ func main() {
 
 	if len(*configFile) == 0 {
 		version()
-		fmt.Println("synopsis: dregsy -config={config file}\n")
+		fmt.Println("synopsis: dregsy -config={config file}")
 		os.Exit(1)
 	}
 

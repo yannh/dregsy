@@ -77,6 +77,14 @@ release: clean dregsy image
 #	clean, do an isolated build, and create container image
 #
 
+.PHONY: test
+test:
+#	run test within a container image
+#
+	docker run --rm --user $(shell id -u):$(shell id -g) \
+        $(CACHE_VOLS) \
+		-v $(shell pwd):/go/src/$(REPO) -w /go/src/$(REPO) \
+		$(GO_IMAGE) go test -v ./...
 
 .PHONY: dregsy
 dregsy:
