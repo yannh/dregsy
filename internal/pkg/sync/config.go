@@ -106,12 +106,13 @@ func (c *syncConfig) validate() error {
  *
  */
 type task struct {
-	Name     string     `yaml:"name"`
-	Interval int        `yaml:"interval"`
-	Source   *location  `yaml:"source"`
-	Target   *location  `yaml:"target"`
-	Mappings []*mapping `yaml:"mappings"`
-	Verbose  bool       `yaml:"verbose"`
+	Name             string     `yaml:"name"`
+	Interval         int        `yaml:"interval"`
+	Source           *location  `yaml:"source"`
+	Target           *location  `yaml:"target"`
+	Mappings         []*mapping `yaml:"mappings"`
+	SkipExistingTags bool       `yaml:"skipExistingTags"`
+	Verbose          bool       `yaml:"verbose"`
 	//
 	ticker   *time.Ticker
 	lastTick time.Time

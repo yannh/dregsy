@@ -61,7 +61,7 @@ func (r *SkopeoRelay) Dispose() {
 //
 func (r *SkopeoRelay) Sync(srcRef, srcAuth string, srcSkipTLSVerify bool,
 	destRef, destAuth string, destSkipTLSVerify bool,
-	tags []string, verbose bool) error {
+	tags []string, skipExistingTags bool, verbose bool) error {
 
 	srcCreds := decodeJSONAuth(srcAuth)
 	destCreds := decodeJSONAuth(destAuth)
@@ -84,8 +84,10 @@ func (r *SkopeoRelay) Sync(srcRef, srcAuth string, srcSkipTLSVerify bool,
 		srcCertDir = fmt.Sprintf("%s/%s", certsBaseDir, withoutPort(repo))
 		cmd = append(cmd, fmt.Sprintf("--src-cert-dir=%s", srcCertDir))
 	}
+	destCertDir := ""
 	repo, _, _ = docker.SplitRef(destRef)
 	if repo != "" {
+		destCertDir = fmt.Sprintf("%s/%s", certsBaseDir, withoutPort(repo))
 		cmd = append(cmd, fmt.Sprintf(
 			"--dest-cert-dir=%s/%s", certsBaseDir, withoutPort(repo)))
 	}
@@ -105,8 +107,29 @@ func (r *SkopeoRelay) Sync(srcRef, srcAuth string, srcSkipTLSVerify bool,
 		}
 	}
 
+	var targetTagsPresent []string
+	if skipExistingTags {
+		var err error
+		targetTagsPresent, err = listAllTags(destRef, destCreds, destCertDir, srcSkipTLSVerify)
+		if err != nil {
+			return err
+		}
+	}
+
 	errs := false
 	for _, tag := range tags {
+		tagAlreadyExists := false
+		for _, targetTag := range targetTagsPresent {
+			if tag == targetTag {
+				tagAlreadyExists = true
+				break
+			}
+		}
+		if tagAlreadyExists {
+			log.Info("skipping tag '%s': already present in destination", tag)
+			continue
+		}
+
 		log.Println()
 		log.Info("syncing tag '%s':", tag)
 		errs = errs || log.Error(
