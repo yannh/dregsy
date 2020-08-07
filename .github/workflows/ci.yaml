@@ -12,3 +12,5 @@ jobs:
 
       - name: build
         run: make clean dregsy
+        env:
+          ISOLATED: y
