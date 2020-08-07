@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/yannh/dregsy/internal/pkg/log"
-	"github.com/yannh/dregsy/internal/pkg/relays/docker"
 	"github.com/yannh/dregsy/internal/pkg/relays/skopeo"
 )
 
@@ -41,26 +40,7 @@ func New(conf *syncConfig) (*sync, error) {
 		out = nil
 	}
 
-	var relay Relay
-	var err error
-
-	switch conf.Relay {
-
-	case docker.RelayID:
-		relay, err = docker.NewDockerRelay(conf.Docker, out)
-
-	case skopeo.RelayID:
-		relay = skopeo.NewSkopeoRelay(conf.Skopeo, out)
-
-	default:
-		err = fmt.Errorf("relay type '%s' not supported", conf.Relay)
-	}
-
-	if err != nil {
-		return nil, fmt.Errorf("cannot create sync relay: %v", err)
-	}
-
-	sync.relay = relay
+	sync.relay = skopeo.NewSkopeoRelay(conf.Skopeo, out)
 	return sync, nil
 }
 

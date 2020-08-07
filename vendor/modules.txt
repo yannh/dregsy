@@ -99,6 +99,9 @@ github.com/golang/protobuf/ptypes/timestamp
 github.com/jmespath/go-jmespath
 # github.com/konsorten/go-windows-terminal-sequences v1.0.3
 github.com/konsorten/go-windows-terminal-sequences
+# github.com/moby/moby v17.12.0-ce-rc1.0.20200531234253-77e06fda0c94+incompatible
+## explicit
+github.com/moby/moby/client
 # github.com/morikuni/aec v1.0.0
 ## explicit
 github.com/morikuni/aec
