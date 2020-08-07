@@ -79,7 +79,7 @@ release: clean test dregsy image
 
 .PHONY: test
 test:
-#	run test within a container image
+#	run tests within a container image
 #
 	docker run --rm \
 		-v $(shell pwd):/go/src/$(REPO) -w /go/src/$(REPO) \
