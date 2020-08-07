@@ -25,7 +25,7 @@ BINARIES=$(BUILD_OUTPUT)/bin
 ISOLATED_PKG=$(BUILD_OUTPUT)/pkg
 ISOLATED_CACHE=$(BUILD_OUTPUT)/cache
 
-GO_IMAGE=golang:1.13.6-buster@sha256:f6cefbdd25f9a66ec7dcef1ee5deb417882b9db9629a724af8a332fe54e3f7b3
+GO_IMAGE=golang:1.14.7-buster
 
 ##
 # You can set the following environment variables when calling make:
