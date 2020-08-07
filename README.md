@@ -81,7 +81,7 @@ tasks:
 ### Tags Filtering
 
 Tags support simple logic:
- * Wildcards '*' are allowed - for example 'v0.1.*', or 'v1.*.*'
+ * Wildcards '\*' are allowed - for example 'v0.1.\*', or 'v1.\*.\*'
  * Comparison operators are supported - '>=v0.2', '>1', '<1.2', '<=1'. In this case the tag can not contain wildcards.
 
 ### Caveats
