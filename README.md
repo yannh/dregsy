@@ -42,7 +42,7 @@ tasks:
 
     # does not copy the tag if it already exists in the target registry
     # This can cause problems for tags that are not immutable such
-    # as 'latest'; defaults to false when ommitted
+    # as 'latest'; defaults to false when omitted
     skipExistingTags: false
 
     # 'source' and 'target' are both required and describe the source and
