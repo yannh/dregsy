@@ -1,3 +1,5 @@
+[![Build status](https://github.com/yannh/dregsy/workflows/ci/badge.svg?branch=master)](https://github.com/yannh/dregsy/actions?query=workflow%3Aci)
+
 # *dregsy* - Docker Registry Sync
 
 
