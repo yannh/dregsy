@@ -7,6 +7,7 @@ import (
 
 	"github.com/yannh/dregsy/internal/pkg/log"
 	"github.com/yannh/dregsy/internal/pkg/relays/docker"
+	t "github.com/yannh/dregsy/internal/pkg/tags"
 )
 
 const RelayID = "skopeo"
@@ -61,7 +62,7 @@ func (r *SkopeoRelay) Dispose() {
 //
 func (r *SkopeoRelay) Sync(srcRef, srcAuth string, srcSkipTLSVerify bool,
 	destRef, destAuth string, destSkipTLSVerify bool,
-	tags []string, skipExistingTags bool, verbose bool) error {
+	tags []string, excludeTags []string, skipExistingTags bool, verbose bool) error {
 
 	srcCreds := decodeJSONAuth(srcAuth)
 	destCreds := decodeJSONAuth(destAuth)
@@ -118,6 +119,14 @@ func (r *SkopeoRelay) Sync(srcRef, srcAuth string, srcSkipTLSVerify bool,
 
 	errs := false
 	for _, tag := range tags {
+		match, err := t.Match(tag, tags, excludeTags)
+		if err != nil {
+			return err
+		}
+		if !match {
+			continue
+		}
+
 		if skipExistingTags {
 			tagAlreadyExists := false
 			for _, targetTag := range targetTagsPresent {

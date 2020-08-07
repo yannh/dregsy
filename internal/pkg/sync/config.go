@@ -22,6 +22,7 @@ import (
 	"github.com/yannh/dregsy/internal/pkg/log"
 	"github.com/yannh/dregsy/internal/pkg/relays/docker"
 	"github.com/yannh/dregsy/internal/pkg/relays/skopeo"
+	"github.com/yannh/dregsy/internal/pkg/tags"
 )
 
 //
@@ -346,11 +347,11 @@ type mapping struct {
 	From string   `yaml:"from"`
 	To   string   `yaml:"to"`
 	Tags []string `yaml:"tags"`
+	ExcludeTags []string `yaml:"excludeTags"`
 }
 
 //
 func (m *mapping) validate() error {
-
 	if m == nil {
 		return errors.New("mapping is nil")
 	}
@@ -361,6 +362,12 @@ func (m *mapping) validate() error {
 
 	if m.To == "" {
 		m.To = m.From
+	}
+
+	for _, tag := range m.Tags {
+		if tags.GetComparisonOperator(tag) != "" && strings.Contains(tag, "*") {
+			return errors.New(fmt.Sprint("can not have wildcard in tag %s since it uses a comparison operator", tag))
+		}
 	}
 
 	return nil
