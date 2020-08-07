@@ -81,7 +81,7 @@ release: clean dregsy image
 test:
 #	run test within a container image
 #
-	docker run --rm --user $(shell id -u):$(shell id -g) \
+	docker run --rm \
 		-v $(shell pwd):/go/src/$(REPO) -w /go/src/$(REPO) \
 		$(GO_IMAGE) go test -v ./...
 
