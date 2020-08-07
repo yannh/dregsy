@@ -118,16 +118,19 @@ func (r *SkopeoRelay) Sync(srcRef, srcAuth string, srcSkipTLSVerify bool,
 
 	errs := false
 	for _, tag := range tags {
-		tagAlreadyExists := false
-		for _, targetTag := range targetTagsPresent {
-			if tag == targetTag {
-				tagAlreadyExists = true
-				break
+		if skipExistingTags {
+			tagAlreadyExists := false
+			for _, targetTag := range targetTagsPresent {
+				if tag == targetTag {
+					tagAlreadyExists = true
+					break
+				}
 			}
-		}
-		if tagAlreadyExists {
-			log.Info("skipping tag '%s': already present in destination", tag)
-			continue
+
+			if tagAlreadyExists {
+				log.Info("skipping tag '%s': already present in destination", tag)
+				continue
+			}
 		}
 
 		log.Println()
